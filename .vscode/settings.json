@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/70e39e96-3bf6-4649-964e-f6ac939f64c5/resourceGroups/Mi-pasarela-de-pago_group/providers/Microsoft.Web/sites/Mi-pasarela-de-pago",
+    "appService.deploySubpath": "."
+}

@@ -1,0 +1,6 @@
+@VendedorAPI_HostAddress = http://localhost:5228
+
+GET {{VendedorAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
