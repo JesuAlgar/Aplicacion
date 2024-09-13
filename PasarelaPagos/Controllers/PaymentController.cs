@@ -1,37 +1,45 @@
 using Microsoft.AspNetCore.Mvc;
-using PasarelaPagos.Models;
 
-[ApiController]
-[Route("api/[controller]")]
-public class PaymentController : ControllerBase
+namespace PasarelaDePagosAPI.Controllers
 {
-    // Endpoint para procesar pagos (POST)
-    [HttpPost("procesarPago")]
-    public IActionResult ProcesarPago([FromBody] PagoRequest request)
+    [ApiController]
+    [Route("api/pasarela")]
+    public class PasarelaDePagosController : ControllerBase
     {
-        if (EsPagoValido(request.DetallesPago))
+        [HttpPost("intento-pago")]
+        public IActionResult IntentoPago([FromBody] Tarjeta tarjeta)
         {
-            // Si el pago es válido, devolver respuesta exitosa
-            return Ok(new { mensaje = "Pago procesado con éxito" });
+            // Lógica para validar los datos de la tarjeta (simulada)
+            if (EsTarjetaValida(tarjeta))
+            {
+                return Ok(new { mensaje = "Pago aprobado" });
+            }
+            else
+            {
+                return BadRequest(new { mensaje = "Pago rechazado" });
+            }
         }
-        
-        // Si hay algún error en la validación del pago, devolver BadRequest
-        return BadRequest(new { mensaje = "Pago rechazado" });
+
+        private bool EsTarjetaValida(Tarjeta tarjeta)
+        {
+            // Aquí se podría agregar lógica para validar la tarjeta
+            // Por ejemplo, validar longitud del número de tarjeta, formato de fecha, etc.
+            // Simulamos que todas las tarjetas que empiezan con "4" son válidas.
+
+            if (tarjeta.Numero.StartsWith("4"))
+            {
+                return true; // Tarjeta válida
+            }
+            return false; // Tarjeta rechazada
+        }
     }
 
-    // Método privado que simula la validación del pago
-    private bool EsPagoValido(DetallesPago detalles)
+    // Clase de la tarjeta
+    public class Tarjeta
     {
-        // Simular validaciones de tarjeta de crédito (esto puede mejorarse)
-        // Aquí puedes agregar validaciones reales (número de tarjeta, CVV, etc.)
-        return !string.IsNullOrEmpty(detalles.NumeroTarjeta) 
-               && detalles.CVV.Length == 3; // Ejemplo simple de validación
-    }
-
-    // Endpoint de prueba para verificar que la API está funcionando (GET)
-    [HttpGet("prueba")]
-    public IActionResult Prueba()
-    {
-        return Ok(new { mensaje = "API funcionando correctamente" });
+        public string Numero { get; set; }
+        public string Nombre { get; set; }
+        public string CVV { get; set; }
+        public string FechaExpiracion { get; set; }
     }
 }
