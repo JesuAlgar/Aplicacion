@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace PasarelaDePagosAPI.Controllers
+namespace PasarelaDePagoAPI.Controllers
 {
     [ApiController]
     [Route("api/pasarela")]
-    public class PasarelaDePagosController : ControllerBase
+    public class PasarelaDePagoController : ControllerBase
     {
         [HttpPost("intento-pago")]
         public IActionResult IntentoPago([FromBody] Tarjeta tarjeta)
         {
-            // Lógica para validar los datos de la tarjeta (simulada)
+            // Simulación de la lógica de validación de la tarjeta
             if (EsTarjetaValida(tarjeta))
             {
                 return Ok(new { mensaje = "Pago aprobado" });
@@ -20,21 +20,19 @@ namespace PasarelaDePagosAPI.Controllers
             }
         }
 
+        // Lógica simple para validar la tarjeta
         private bool EsTarjetaValida(Tarjeta tarjeta)
         {
-            // Aquí se podría agregar lógica para validar la tarjeta
-            // Por ejemplo, validar longitud del número de tarjeta, formato de fecha, etc.
-            // Simulamos que todas las tarjetas que empiezan con "4" son válidas.
-
+            // Simulación: todas las tarjetas que comienzan con "4" son válidas
             if (tarjeta.Numero.StartsWith("4"))
             {
                 return true; // Tarjeta válida
             }
-            return false; // Tarjeta rechazada
+            return false; // Tarjeta inválida
         }
     }
 
-    // Clase de la tarjeta
+    // Modelo para la tarjeta de pago
     public class Tarjeta
     {
         public string Numero { get; set; }

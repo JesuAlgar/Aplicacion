@@ -1,45 +1,48 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-public class Startup
+namespace PasarelaDePagoAPI
 {
-    public void ConfigureServices(IServiceCollection services)
+    public class Startup
     {
-        services.AddControllers();
-
-        // Habilitar CORS para permitir solicitudes desde la API del Vendedor
-        services.AddCors(options =>
+        public Startup(IConfiguration configuration)
         {
-            options.AddPolicy("PermitirVendedorAPI", builder =>
-            {
-                builder.WithOrigins("https://localhost:5002")  // Cambia por el puerto del VendedorAPI
-                       .AllowAnyHeader()
-                       .AllowAnyMethod();
-            });
-        });
-    }
-
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
+            Configuration = configuration;
         }
 
-        app.UseHttpsRedirection();
+        public IConfiguration Configuration { get; }
 
-        app.UseRouting();
-
-        // Aplicar la política de CORS para la comunicación con el VendedorAPI
-        app.UseCors("PermitirVendedorAPI");
-
-        app.UseAuthorization();
-
-        app.UseEndpoints(endpoints =>
+        // Configura los servicios para la aplicación
+        public void ConfigureServices(IServiceCollection services)
         {
-            endpoints.MapControllers();
-        });
+            // Agregar soporte para controladores
+            services.AddControllers();
+        }
+
+        // Configuración del pipeline de la aplicación
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();  // Redirigir HTTP a HTTPS
+            app.UseRouting();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();  // Mapear controladores
+            });
+        }
     }
 }

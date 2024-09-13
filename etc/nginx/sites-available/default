@@ -1,0 +1,39 @@
+server {
+    listen 80;
+    server_name tu_dominio_o_ip;
+
+    # Redirigir HTTP a HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name tu_dominio_o_ip;
+
+    # Configuración de SSL
+    ssl_certificate /etc/letsencrypt/live/tu_dominio_o_ip/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/tu_dominio_o_ip/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/tu_dominio_o_ip/chain.pem;
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # Proxy para VendedorAPI
+    location /api/vendedor {
+        proxy_pass http://<ip-vendedor-api>:5000;  # Cambia 5000 por el puerto de VendedorAPI
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Proxy para Pasarela de Pago
+    location /api/pasarela {
+        proxy_pass http://<ip-pasarela-de-pago>:5001;  # Cambia 5001 por el puerto de Pasarela de Pago
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
